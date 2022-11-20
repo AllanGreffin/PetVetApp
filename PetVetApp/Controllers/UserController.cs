@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PetVetApp.DTOs;
+using PetVetApp.Services;
 
 namespace PetVetApp.Controllers
 {
@@ -11,11 +12,13 @@ namespace PetVetApp.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly AuthManager _authManager;
 
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, AuthManager authManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _authManager = authManager;
         }
 
         [HttpPost]
@@ -39,8 +42,21 @@ namespace PetVetApp.Controllers
             user.AccessFailedCount = userDTO.AccessFailedCount;
 
             var result = await _userManager.CreateAsync(user, userDTO.PasswordHash);
+        }
 
-            return;
+        [HttpPost]
+        [Route("Login")]
+        public async Task Login([FromBody] UserDTO userDTO)
+        {
+            if (await _authManager.ValidateUser(userDTO))
+            {
+                var token = await _authManager.CreateToken();
+                Response.Cookies.Append("JWToken", token);
+            }
+            else
+            {
+                Response.StatusCode = 401;
+            }                
         }
     }
 }

@@ -4,6 +4,5 @@ namespace PetVetApp.DTOs
 {
     public class UserDTO : IdentityUser
     {
-
     }
 }
