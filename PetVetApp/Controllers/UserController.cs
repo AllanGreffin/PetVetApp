@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PetVetApp.DTOs;
@@ -12,9 +13,9 @@ namespace PetVetApp.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly AuthManager _authManager;
+        private readonly AuthService _authManager;
 
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, AuthManager authManager)
+        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, AuthService authManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,16 +47,19 @@ namespace PetVetApp.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task Login([FromBody] UserDTO userDTO)
+        public async Task<IdentityUser> Login([FromBody] UserDTO userDTO)
         {
-            if (await _authManager.ValidateUser(userDTO))
+            var user = await _authManager.ValidateUser(userDTO);
+            if (user != null)
             {
                 var token = await _authManager.CreateToken();
                 Response.Cookies.Append("JWToken", token);
+                return user;
             }
             else
             {
                 Response.StatusCode = 401;
+                return null;
             }                
         }
     }

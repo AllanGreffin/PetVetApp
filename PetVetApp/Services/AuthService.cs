@@ -7,12 +7,12 @@ using System.Text;
 
 namespace PetVetApp.Services
 {
-    public class AuthManager
+    public class AuthService
     {
         private readonly UserManager<IdentityUser> _userManager;
         private IdentityUser _apiUser;
 
-        public AuthManager(UserManager<IdentityUser> userManager)
+        public AuthService(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }
@@ -66,11 +66,18 @@ namespace PetVetApp.Services
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public async Task<bool> ValidateUser(UserDTO userDTO)
+        public async Task<IdentityUser> ValidateUser(UserDTO userDTO)
         {
             _apiUser = await _userManager.FindByNameAsync(userDTO.UserName);
             var result = _apiUser != null && await _userManager.CheckPasswordAsync(_apiUser, userDTO.PasswordHash);
-            return result;
+            if (result)
+            {
+                return _apiUser;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

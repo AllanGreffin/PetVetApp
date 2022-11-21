@@ -38,7 +38,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<UserManager<IdentityUser>>();
 builder.Services.AddScoped<SignInManager<IdentityUser>>();
-builder.Services.AddScoped<AuthManager>();
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
