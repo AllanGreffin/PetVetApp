@@ -60,7 +60,7 @@ namespace PetVetApp.Services
 
         private SigningCredentials GetSigningCredentials()
         {
-            var key = "PetVetAppApiSecretKey";
+            var key = "PetVetAppApiUltraMegaSuperSecretKey";
             var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);

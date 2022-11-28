@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +20,8 @@ builder.Services.AddCors(options =>
                               policy.WithOrigins("http://localhost:4200",
                                                   "https://localhost:4200")
                                                   .AllowAnyHeader()
-                                                  .AllowAnyMethod();
+                                                  .AllowAnyMethod()
+                                                  .AllowCredentials();
                           });
 });
 
@@ -47,16 +51,31 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(o =>
 {
-    
-}).AddJwtBearer(o =>
+    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(
+    //"JwtBearer",
+    o =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateLifetime = true,
         ValidIssuer = "PetVetAppApi",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("PetVetAppApiSecretKey")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("PetVetAppApiUltraMegaSuperSecretKey")),
+        ValidateAudience = false
     };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        JwtBearerDefaults.AuthenticationScheme);
+
+    defaultAuthorizationPolicyBuilder =
+        defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+
+    options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
 });
 
 var app = builder.Build();
@@ -68,11 +87,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("corsConfig");
 app.UseAuthentication();
+//app.UseRouting();
 app.UseAuthorization();
-
+//app.UseEndpoints();
 app.MapControllers();
 
 app.Run();

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PetVetApp.DTOs;
+using PetVetApp.Helpers;
 using PetVetApp.Services;
 
 namespace PetVetApp.Controllers
@@ -47,14 +48,17 @@ namespace PetVetApp.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IdentityUser> Login([FromBody] UserDTO userDTO)
+        public async Task<UserDTO> Login([FromBody] UserDTO userDTO)
         {
             var user = await _authManager.ValidateUser(userDTO);
+            var result = user.ToUserDTO();
             if (user != null)
             {
                 var token = await _authManager.CreateToken();
-                Response.Cookies.Append("JWToken", token);
-                return user;
+                //Response.Cookies.Append("Bearer", token, new CookieOptions { IsEssential = true, Secure = false, HttpOnly = false, SameSite = SameSiteMode.Lax });
+                //Response.Headers.Add("Bearer", "token");
+                result.Token = token;
+                return result;
             }
             else
             {
