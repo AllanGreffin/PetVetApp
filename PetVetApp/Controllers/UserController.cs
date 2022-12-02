@@ -55,8 +55,6 @@ namespace PetVetApp.Controllers
             if (user != null)
             {
                 var token = await _authManager.CreateToken();
-                //Response.Cookies.Append("Bearer", token, new CookieOptions { IsEssential = true, Secure = false, HttpOnly = false, SameSite = SameSiteMode.Lax });
-                //Response.Headers.Add("Bearer", "token");
                 result.Token = token;
                 return result;
             }

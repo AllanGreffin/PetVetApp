@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetVetApp.Data;
+using PetVetApp.DTOs;
 using PetVetApp.Models;
 
 namespace PetVetApp.Controllers
@@ -44,12 +45,26 @@ namespace PetVetApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPetById(Guid? id, Pet pet)
+        public async Task<IActionResult> PutPetById(Guid? id, PetDTO petDTO)
         {
-            if (id != pet.Id)
+            if (id != petDTO.Id)
             {
                 return BadRequest();
             }
+            var pet = new Pet()
+            {
+                Id = petDTO.Id,
+                Name = petDTO.Name,
+                AnimalType = petDTO.AnimalType,
+                Breed = petDTO.Breed,
+                BirthDate = petDTO.BirthDate,
+                Weight = petDTO.Weight,
+                Height = petDTO.Height,
+                Color = petDTO.Color,
+                Observation = petDTO.Observation,
+                ImageUrl = petDTO.ImageUrl,
+                UserId = petDTO.UserId
+            };
 
             _context.Entry(pet).State = EntityState.Modified;
 
@@ -69,16 +84,30 @@ namespace PetVetApp.Controllers
                 }
             }
 
-            return NoContent();
+            return AcceptedAtAction(null, new { Id = pet.Id });
         }
 
         [HttpPost]
-        public async Task<ActionResult<Pet>> PostPet(Pet pet)
+        public async Task<ActionResult<Pet>> PostPet(PetDTO petDTO)
         {
+            var pet = new Pet
+            {
+                Id = petDTO.Id,
+                Name = petDTO.Name,
+                AnimalType = petDTO.AnimalType,
+                Breed = petDTO.Breed,
+                BirthDate = petDTO.BirthDate,
+                Weight = petDTO.Weight,
+                Height = petDTO.Height,
+                Color = petDTO.Color,
+                Observation = petDTO.Observation,
+                ImageUrl = petDTO.ImageUrl,
+                UserId = petDTO.UserId
+            };
             _context.Pet.Add(pet);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPet", new { id = pet.Id }, pet);
+            return CreatedAtAction(null, new { id = pet.Id });
         }
 
         [HttpDelete("{id}")]
