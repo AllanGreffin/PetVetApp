@@ -51,20 +51,7 @@ namespace PetVetApp.Controllers
             {
                 return BadRequest();
             }
-            var pet = new Pet()
-            {
-                Id = petDTO.Id,
-                Name = petDTO.Name,
-                AnimalType = petDTO.AnimalType,
-                Breed = petDTO.Breed,
-                BirthDate = petDTO.BirthDate,
-                Weight = petDTO.Weight,
-                Height = petDTO.Height,
-                Color = petDTO.Color,
-                Observation = petDTO.Observation,
-                ImageUrl = petDTO.ImageUrl,
-                UserId = petDTO.UserId
-            };
+            var pet = new Pet().ConvertFromDTO(petDTO);
 
             _context.Entry(pet).State = EntityState.Modified;
 
@@ -90,20 +77,7 @@ namespace PetVetApp.Controllers
         [HttpPost]
         public async Task<ActionResult<Pet>> PostPet(PetDTO petDTO)
         {
-            var pet = new Pet
-            {
-                Id = petDTO.Id,
-                Name = petDTO.Name,
-                AnimalType = petDTO.AnimalType,
-                Breed = petDTO.Breed,
-                BirthDate = petDTO.BirthDate,
-                Weight = petDTO.Weight,
-                Height = petDTO.Height,
-                Color = petDTO.Color,
-                Observation = petDTO.Observation,
-                ImageUrl = petDTO.ImageUrl,
-                UserId = petDTO.UserId
-            };
+            var pet = new Pet().ConvertFromDTO(petDTO);
             _context.Pet.Add(pet);
             await _context.SaveChangesAsync();
 

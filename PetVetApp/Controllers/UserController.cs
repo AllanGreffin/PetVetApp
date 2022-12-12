@@ -51,7 +51,7 @@ namespace PetVetApp.Controllers
         public async Task<UserDTO> Login([FromBody] UserDTO userDTO)
         {
             var user = await _authManager.ValidateUser(userDTO);
-            var result = user.ToUserDTO();
+            var result = user?.ToUserDTO();
             if (user != null)
             {
                 var token = await _authManager.CreateToken();
